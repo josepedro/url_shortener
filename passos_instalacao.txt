@@ -1,0 +1,7 @@
+instalando ambiente para virtual => sudo pip install virtualenvwrapper
+arrumando o bashrc para virtualenv_warpper => source /usr/bin/virtualenvwrapper.sh
+depois da um source no bashrc
+instalar o flask: sudo pip install flask
+instalar o ipython: sudo pip install IPython==5.0
+sem sudo: pip install flask
+sem sudo: pip install IPython==5.0
