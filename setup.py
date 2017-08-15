@@ -14,5 +14,7 @@ setup(
     entry_points={'console_scripts': [
         'app = app.url_shortener.url_shortener:main',]
         },
-    install_requires=['flask','nose'],test_suite='nose.collector'
+    install_requires=['flask','nose','flask-sqlalchemy','marshmallow-sqlalchemy','flask_marshmallow', 
+    'marshmallow-jsonschema'],
+    test_suite='nose.collector'
         )

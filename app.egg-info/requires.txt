@@ -1,2 +1,6 @@
 flask
 nose
+flask-sqlalchemy
+marshmallow-sqlalchemy
+flask_marshmallow
+marshmallow-jsonschema
