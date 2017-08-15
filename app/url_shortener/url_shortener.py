@@ -23,12 +23,13 @@ db.create_all()
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.String(255), primary_key=True)
-    url = relationship("Url")
+    #url = relationship("Url")
+    urls = db.relationship('Url', backref='user', lazy='dynamic')
 
 class Url(db.Model):
     __tablename__ = 'url'
     id = db.Column(db.Integer, primary_key=True)
-    hits = db.Column(db.Integer)
+    hits = db.Column(db.Integer, default=0)
     url = db.Column(db.String(255))
     shortUrl = db.Column(db.String(255))
     user_id = db.Column(db.String(255), db.ForeignKey('user.id'))
@@ -74,11 +75,15 @@ def delete_user(id):
 
 @app.route('/users/<userid>/urls', methods=['POST'])
 def create_url(userid):
-	content = request.json
-	user = User.query.filter_by(id=userid).first()
-	
-	print type(json.dumps(content))
-	return json.dumps(content), 201, {'Content-Type': 'application/json'}
+    content = request.json
+    user = User.query.filter_by(id=userid).first()
+    url = Url(url=content['url'], shortUrl='testtestShort')
+    user.urls.append(url)
+    db.session.add(url)
+    db.session.add(user)
+    db.session.commit()
+    url_schema = UrlSchema()
+    return jsonify(url_schema.dump(url).data), 201, {'Content-Type': 'application/json'}
 
 def main():
 	app.run(host='0.0.0.0', port=8000)

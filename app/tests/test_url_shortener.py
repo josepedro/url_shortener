@@ -80,6 +80,7 @@ class UrlShortnerTestCase(unittest.TestCase):
                        data=json.dumps(dict(url='http://www.chaordic.com.br/folks')),
                        content_type='application/json')
     	print response.data
+        assert 1==1
     	assert response.status_code == 201, "Problem with creating url"
 
 if __name__ == '__main__':
