@@ -6,23 +6,45 @@ from contextlib import closing
 from marshmallow_jsonschema import JSONSchema
 from flask import jsonify
 from flask import json
+from sqlalchemy.orm import relationship
 
 app = Flask("url_shortener")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
+#sqlalchemy_utils.functions.drop_database('sqlite:////tmp/test.db')
+#sqlalchemy_utils.functions.create_database('sqlite:////tmp/test.db')
 
 # Order matters: Initialize SQLAlchemy before Marshmallow
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+db.drop_all()
 db.create_all()
 
 # Declare Models
 class User(db.Model):
-	id = db.Column(db.String(255), primary_key=True)
+    __tablename__ = 'user'
+    id = db.Column(db.String(255), primary_key=True)
+    url = relationship("Url")
+
+class Url(db.Model):
+    __tablename__ = 'url'
+    id = db.Column(db.Integer, primary_key=True)
+    hits = db.Column(db.Integer)
+    url = db.Column(db.String(255))
+    shortUrl = db.Column(db.String(255))
+    user_id = db.Column(db.String(255), db.ForeignKey('user.id'))
+
+# --------------------------------------------------
 
 # Generate Schemas from Models
 class UserSchema(ma.ModelSchema):
     class Meta:
         model = User
+
+class UrlSchema(ma.ModelSchema):
+    class Meta:
+        model = Url
+
+# --------------------------------------------------
 
 @app.route("/")
 def hello_world():
@@ -48,7 +70,15 @@ def delete_user(id):
         return "", 404, {'Content-Type': 'application/json'}
     else:
         User.query.filter_by(id=id).delete()
-        return "", 204, {'Content-Type': 'application/json'}        
+        return "", 204, {'Content-Type': 'application/json'}
+
+@app.route('/users/<userid>/urls', methods=['POST'])
+def create_url(userid):
+	content = request.json
+	user = User.query.filter_by(id=userid).first()
+	
+	print type(json.dumps(content))
+	return json.dumps(content), 201, {'Content-Type': 'application/json'}
 
 def main():
 	app.run(host='0.0.0.0', port=8000)

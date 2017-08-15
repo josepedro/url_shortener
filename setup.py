@@ -15,6 +15,6 @@ setup(
         'app = app.url_shortener.url_shortener:main',]
         },
     install_requires=['flask','nose','flask-sqlalchemy','marshmallow-sqlalchemy','flask_marshmallow', 
-    'marshmallow-jsonschema'],
+    'marshmallow-jsonschema', 'sqlalchemy-utils'],
     test_suite='nose.collector'
         )

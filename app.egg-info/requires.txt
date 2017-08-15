@@ -4,3 +4,4 @@ flask-sqlalchemy
 marshmallow-sqlalchemy
 flask_marshmallow
 marshmallow-jsonschema
+sqlalchemy-utils

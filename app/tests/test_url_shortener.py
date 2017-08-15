@@ -13,10 +13,14 @@ class UrlShortnerTestCase(unittest.TestCase):
     def setUp(self):
         app.url_shortener.url_shortener.app.testing = True
         self.app = app.url_shortener.url_shortener.app.test_client()
+        db = SQLAlchemy(app.url_shortener.url_shortener.app)
+        db.drop_all()
+        db.create_all()
 
     def tearDown(self):
     	pass
 
+    # POST /users
     def test_create_user(self):
     	db = SQLAlchemy(app.url_shortener.url_shortener.app)
         num_rows_deleted = db.session.query(User).delete()
@@ -39,7 +43,9 @@ class UrlShortnerTestCase(unittest.TestCase):
                        data=json.dumps(dict(id='userTest')),
                        content_type='application/json')
     	assert response.status_code == 409, "Problem with code conflict"
+    # ------------------------------------------------------------------
 
+    # DELETE /urls/:id
     def test_delete_user(self):
     	db = SQLAlchemy(app.url_shortener.url_shortener.app)
         num_rows_deleted = db.session.query(User).delete()
@@ -58,8 +64,23 @@ class UrlShortnerTestCase(unittest.TestCase):
         db.session.commit()
         response = self.app.get('/user/usasdt',
                        content_type='application/json')
-        print response.status_code
     	assert response.status_code == 404, "Problem with deleting user null"    	
+    # ------------------------------------------------------------------
+
+    # POST /users/:userid/urls
+    def test_create_url(self):
+    	db = SQLAlchemy(app.url_shortener.url_shortener.app)
+        num_rows_deleted = db.session.query(User).delete()
+        user = User(id='userTest')
+        db.session.add(user)
+        db.session.commit()
+        user_schema = UserSchema()
+        user_schema.dump(user).data
+    	response = self.app.post('/users/userTest/urls', 
+                       data=json.dumps(dict(url='http://www.chaordic.com.br/folks')),
+                       content_type='application/json')
+    	print response.data
+    	assert response.status_code == 201, "Problem with creating url"
 
 if __name__ == '__main__':
 	unittest.main()
