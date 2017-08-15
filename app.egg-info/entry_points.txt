@@ -1,0 +1,3 @@
+[console_scripts]
+app = app.url_shortener.url_shortener:main
+

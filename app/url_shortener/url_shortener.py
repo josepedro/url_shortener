@@ -6,4 +6,5 @@ app = Flask("url_shortener")
 def hello_world():
     return "<strong> hello_world!!!</strong>", 200
 
-app.run(host='0.0.0.0')
+def main():
+	app.run(host='0.0.0.0', port=8000)
