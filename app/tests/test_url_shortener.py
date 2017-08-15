@@ -2,13 +2,13 @@ import os
 import unittest
 import tempfile
 import sys
-import url_shortener.url_shortener
+import app.url_shortener.url_shortener
 
 class UrlShortnerTestCase(unittest.TestCase):
 
     def setUp(self):
         print "rodando a parada"
-        flaskr.app.testing = True
+        app.url_shortener.url_shortener.app.testing = True
 
     def tearDown(self):
         pass

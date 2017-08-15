@@ -6,3 +6,5 @@ instalar o ipython: sudo pip install IPython==5.0
 sem sudo: pip install flask
 sem sudo: pip install IPython==5.0
 instalando setuptools: pip install -U pip setuptools
+rodando o teste: python setup.py test
+instalando independencias do setuptools: pip install -e .
