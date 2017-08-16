@@ -113,5 +113,14 @@ def get_url(id):
     url = Url.query.filter_by(id=id).first()
     return redirect(url.url, code=301)
 
+@app.route('/urls/<id>', methods=['DELETE'])
+def delete_url(id):
+    list_urls = Url.query.filter(Url.id.endswith(id)).all()
+    if list_urls == []:
+        return "", 404, {'Content-Type': 'application/json'}
+    else:
+        Url.query.filter_by(id=id).delete()
+        return "", 204, {'Content-Type': 'application/json'}
+
 def main():
 	app.run(host=host, port=port)

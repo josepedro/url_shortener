@@ -63,6 +63,7 @@ class UrlShortnerTestCase(unittest.TestCase):
         user_schema.dump(user).data
     	response = self.app.delete('/user/userTest',
                        content_type='application/json')
+        assert response.data == "", "Rerturn is not empty"
     	assert response.status_code == 204, "Problem with deleting user"
 
     def test_delete_user_not_exist(self):
@@ -71,6 +72,7 @@ class UrlShortnerTestCase(unittest.TestCase):
         db.session.commit()
         response = self.app.delete('/user/usasdt',
                        content_type='application/json')
+        assert response.data == "", "Rerturn is not empty"
     	assert response.status_code == 404, "Problem with deleting user null"    	
     # ------------------------------------------------------------------
 
@@ -138,12 +140,46 @@ class UrlShortnerTestCase(unittest.TestCase):
         url_schema = UrlSchema()
         url_schema.dump(url).data
         response = self.app.get('/urls/1')
-
         assert response.status_code == 301, "Problem with status code"
     # ------------------------------------------------------------------
 
     # DELETE /urls/:id
-    #def test_delete_url(self):
+    def test_delete_url(self):
+        db = SQLAlchemy(app.url_shortener.url_shortener.app)
+        num_rows_deleted_user = db.session.query(User).delete()
+        num_rows_deleted_url = db.session.query(Url).delete()
+        user = User(id='userTest2')
+        db.session.add(user)
+        db.session.commit()
+        user_schema = UserSchema()
+        user_schema.dump(user).data
+        url = Url(url='http://www.chaordic.com.br/folks',
+            shortUrl='generate_short_url(host, port)')
+        user.urls.append(url)
+        db.session.add(url)
+        db.session.add(user)
+        db.session.commit()
+        url_schema = UrlSchema()
+        url_schema.dump(url).data
+        response = self.app.delete('/urls/1', content_type='application/json')
+        assert response.data == "", "Rerturn is not empty"
+        assert response.status_code == 204, "Problem with status code"
+
+    def test_delete_url_not_exist(self):
+        db = SQLAlchemy(app.url_shortener.url_shortener.app)
+        num_rows_deleted = db.session.query(Url).delete()
+        db.session.commit()
+        response = self.app.delete('/urls/1',
+                       content_type='application/json')
+        assert response.data == "", "Rerturn is not empty"
+        assert response.status_code == 404, "Problem with status code"
+    # ------------------------------------------------------------------
+
+    # GET /users/:userId/stats
+    def test_stats_user(self):
+        json_response = json.loads(response.data)
+        # FAZEEEEER
+
 
 
 
