@@ -17,7 +17,6 @@ port = '8000'
 app = Flask("url_shortener")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
 
-# Order matters: Initialize SQLAlchemy before Marshmallow
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
 db.drop_all()

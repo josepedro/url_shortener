@@ -228,7 +228,7 @@ class UrlShortnerTestCase(unittest.TestCase):
         response = self.app.get('/users/userTest2/stats')
         json_response = json.loads(response.data)
         top_urls = json_response['topUrls']
-        urls_list.sort(key=lambda x: x['hits'], reverse=False)
+        urls_list.sort(key=lambda x: x['hits'], reverse=True)
         assert json_response['urlCount'] == total_urls, "Urls quantity wrong"
         assert json_response['hits'] == total_hits, "Hits quantity wrong" 
         assert len(top_urls) == 10, "Problem with urls quantity"
@@ -291,7 +291,7 @@ class UrlShortnerTestCase(unittest.TestCase):
         response = self.app.get('/stats')
         json_response = json.loads(response.data)
         top_urls = json_response['topUrls']
-        urls_list.sort(key=lambda x: x['hits'], reverse=False)
+        urls_list.sort(key=lambda x: x['hits'], reverse=True)
         assert json_response['urlCount'] == total_urls + total_urls_2, "Urls quantity wrong"
         assert json_response['hits'] == total_hits, "Hits quantity wrong" 
         assert len(top_urls) == 10, "Problem with urls quantity"
