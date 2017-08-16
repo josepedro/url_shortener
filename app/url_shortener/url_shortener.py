@@ -71,6 +71,8 @@ def hello_world():
 @app.route('/users', methods=['POST'])
 def create_user():
     content = request.json
+    if content == None:
+        return "", 404
     user = User(id=content['id'])
     list_users = User.query.filter(User.id.endswith(user.id)).all()
     if list_users == []:
@@ -94,6 +96,8 @@ def delete_user(id):
 def create_url(userid):
     content = request.json
     user = User.query.filter_by(id=userid).first()
+    if user == None:
+        return "", 404
     url = Url(url=content['url'], shortUrl=generate_short_url(host, port))
     user.urls.append(url)
     db.session.add(url)
@@ -105,12 +109,16 @@ def create_url(userid):
 @app.route('/stats/<id>', methods=['GET'])
 def stats_url(id):
     url = Url.query.filter_by(id=id).first()
+    if url == None:
+        return "", 404
     data = json.dumps(dict(id=url.id, hits=url.hits, url=url.url, shortUrl=url.shortUrl))
     return data, 200, {'Content-Type': 'application/json'}    
 
 @app.route('/urls/<id>', methods=['GET'])
 def get_url(id):
     url = Url.query.filter_by(id=id).first()
+    if url == None:
+        return "", 404
     return redirect(url.url, code=301)
 
 @app.route('/urls/<id>', methods=['DELETE'])
@@ -125,11 +133,28 @@ def delete_url(id):
 @app.route('/users/<userId>/stats', methods=['GET'])
 def stats_user(userId):
     user = User.query.filter_by(id=userId).first()
-    hits = 0
-    urlCount = 0
-    urls_sorted = sorted(user.urls, key=lambda x: x.hits, reverse=True)
+    if user == None:
+        return "", 404
+    urls_sorted = sorted(user.urls, key=lambda x: x.hits, reverse=False)
     hits = sum(url.hits for url in user.urls)
     urlCount = len(urls_sorted)
+    urls_dictionary = []
+    for i in range(0,10):
+        url = urls_sorted[i]
+        url_dictionary = dict(id=url.id, hits=url.hits, 
+            url=url.url, shortUrl=url.shortUrl)
+        urls_dictionary.append(url_dictionary)        
+    data = json.dumps(dict(hits=hits, urlCount=urlCount, topUrls=urls_dictionary))
+    return data, 200, {'Content-Type': 'application/json'}
+
+@app.route('/stats', methods=['GET'])
+def stats_system():
+    urls = Url.query.all()
+    if urls == []:
+        return "", 404
+    urlCount = len(urls)
+    hits = sum(url.hits for url in urls)
+    urls_sorted = sorted(urls, key=lambda x: x.hits, reverse=False)
     urls_dictionary = []
     for i in range(0,10):
         url = urls_sorted[i]
