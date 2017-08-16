@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+from flask import redirect
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 from contextlib import closing
@@ -7,11 +8,14 @@ from marshmallow_jsonschema import JSONSchema
 from flask import jsonify
 from flask import json
 from sqlalchemy.orm import relationship
+import string
+from datetime import datetime
+import random
 
+host = '0.0.0.0'
+port = '8000'
 app = Flask("url_shortener")
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:////tmp/test.db'
-#sqlalchemy_utils.functions.drop_database('sqlite:////tmp/test.db')
-#sqlalchemy_utils.functions.create_database('sqlite:////tmp/test.db')
 
 # Order matters: Initialize SQLAlchemy before Marshmallow
 db = SQLAlchemy(app)
@@ -23,7 +27,6 @@ db.create_all()
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.String(255), primary_key=True)
-    #url = relationship("Url")
     urls = db.relationship('Url', backref='user', lazy='dynamic')
 
 class Url(db.Model):
@@ -44,6 +47,20 @@ class UserSchema(ma.ModelSchema):
 class UrlSchema(ma.ModelSchema):
     class Meta:
         model = Url
+
+# --------------------------------------------------
+
+# Utils functions
+def generate_short_url(host, port):
+    first_part = random.choice(string.letters) + random.choice(string.letters)
+    last_part = str(
+    (datetime.now().year) + 
+    (datetime.now().month) + 
+    (datetime.now().day) + 
+    (datetime.now().hour) + 
+    (datetime.now().minute) + 
+    (datetime.now().second))
+    return 'http://' + host + ':' + port + '/' + first_part + last_part 
 
 # --------------------------------------------------
 
@@ -77,7 +94,7 @@ def delete_user(id):
 def create_url(userid):
     content = request.json
     user = User.query.filter_by(id=userid).first()
-    url = Url(url=content['url'], shortUrl='testtestShort')
+    url = Url(url=content['url'], shortUrl=generate_short_url(host, port))
     user.urls.append(url)
     db.session.add(url)
     db.session.add(user)
@@ -85,5 +102,16 @@ def create_url(userid):
     url_schema = UrlSchema()
     return jsonify(url_schema.dump(url).data), 201, {'Content-Type': 'application/json'}
 
+@app.route('/stats/<id>', methods=['GET'])
+def stats_url(id):
+    url = Url.query.filter_by(id=id).first()
+    data = json.dumps(dict(id=url.id, hits=url.hits, url=url.url, shortUrl=url.shortUrl))
+    return data, 200, {'Content-Type': 'application/json'}    
+
+@app.route('/urls/<id>', methods=['GET'])
+def get_url(id):
+    url = Url.query.filter_by(id=id).first()
+    return redirect(url.url, code=301)
+
 def main():
-	app.run(host='0.0.0.0', port=8000)
+	app.run(host=host, port=port)
