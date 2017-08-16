@@ -104,7 +104,9 @@ def create_url(userid):
     db.session.add(user)
     db.session.commit()
     url_schema = UrlSchema()
-    return jsonify(url_schema.dump(url).data), 201, {'Content-Type': 'application/json'}
+    url_schema.dump(url).data
+    data = json.dumps(dict(id=url.id, hits=url.hits, url=url.url, shortUrl=url.shortUrl))
+    return data, 201, {'Content-Type': 'application/json'}
 
 @app.route('/stats/<id>', methods=['GET'])
 def stats_url(id):
@@ -119,6 +121,8 @@ def get_url(id):
     url = Url.query.filter_by(id=id).first()
     if url == None:
         return "", 404
+    url.hits += 1
+    db.session.commit() 
     return redirect(url.url, code=301)
 
 @app.route('/urls/<id>', methods=['DELETE'])
@@ -135,11 +139,16 @@ def stats_user(userId):
     user = User.query.filter_by(id=userId).first()
     if user == None:
         return "", 404
-    urls_sorted = sorted(user.urls, key=lambda x: x.hits, reverse=False)
+    urls_sorted = sorted(user.urls, key=lambda x: x.hits, reverse=True)
+    if urls_sorted == []:
+        urls_sorted == user.urls
     hits = sum(url.hits for url in user.urls)
     urlCount = len(urls_sorted)
     urls_dictionary = []
-    for i in range(0,10):
+    total_top = 10
+    if len(urls_sorted) < total_top:
+        total_top = len(urls_sorted)
+    for i in range(0,total_top):
         url = urls_sorted[i]
         url_dictionary = dict(id=url.id, hits=url.hits, 
             url=url.url, shortUrl=url.shortUrl)
@@ -154,9 +163,14 @@ def stats_system():
         return "", 404
     urlCount = len(urls)
     hits = sum(url.hits for url in urls)
-    urls_sorted = sorted(urls, key=lambda x: x.hits, reverse=False)
+    urls_sorted = sorted(urls, key=lambda x: x.hits, reverse=True)
+    if urls_sorted == []:
+        urls_sorted == urls 
     urls_dictionary = []
-    for i in range(0,10):
+    total_top = 10
+    if len(urls) < total_top:
+        total_top = len(urls)
+    for i in range(0,total_top):
         url = urls_sorted[i]
         url_dictionary = dict(id=url.id, hits=url.hits, 
             url=url.url, shortUrl=url.shortUrl)
