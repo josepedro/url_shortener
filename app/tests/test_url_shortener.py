@@ -52,7 +52,7 @@ class UrlShortnerTestCase(unittest.TestCase):
         assert json_response['id'] == 'userTest', "Problem with json response"  
     # ------------------------------------------------------------------
 
-    # DELETE /urls/:id
+    # DELETE /user/:userid
     def test_delete_user(self):
     	db = SQLAlchemy(app.url_shortener.url_shortener.app)
         num_rows_deleted = db.session.query(User).delete()
@@ -61,7 +61,7 @@ class UrlShortnerTestCase(unittest.TestCase):
         db.session.commit()
         user_schema = UserSchema()
         user_schema.dump(user).data
-    	response = self.app.get('/user/userTest',
+    	response = self.app.delete('/user/userTest',
                        content_type='application/json')
     	assert response.status_code == 204, "Problem with deleting user"
 
@@ -69,7 +69,7 @@ class UrlShortnerTestCase(unittest.TestCase):
     	db = SQLAlchemy(app.url_shortener.url_shortener.app)
         num_rows_deleted = db.session.query(User).delete()
         db.session.commit()
-        response = self.app.get('/user/usasdt',
+        response = self.app.delete('/user/usasdt',
                        content_type='application/json')
     	assert response.status_code == 404, "Problem with deleting user null"    	
     # ------------------------------------------------------------------
@@ -138,8 +138,14 @@ class UrlShortnerTestCase(unittest.TestCase):
         url_schema = UrlSchema()
         url_schema.dump(url).data
         response = self.app.get('/urls/1')
+
         assert response.status_code == 301, "Problem with status code"
     # ------------------------------------------------------------------
+
+    # DELETE /urls/:id
+    #def test_delete_url(self):
+
+
 
 if __name__ == '__main__':
 	unittest.main()

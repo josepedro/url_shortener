@@ -81,7 +81,7 @@ def create_user():
     else:
         return request.data, 409, {'Content-Type': 'application/json'} 
 
-@app.route('/user/<id>')
+@app.route('/user/<id>', methods=['DELETE'])
 def delete_user(id):
     list_users = User.query.filter(User.id.endswith(id)).all()
     if list_users == []:
