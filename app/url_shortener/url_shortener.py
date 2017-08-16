@@ -8,8 +8,8 @@ from marshmallow_jsonschema import JSONSchema
 from flask import jsonify
 from flask import json
 from sqlalchemy.orm import relationship
-import string
 from datetime import datetime
+import string
 import random
 
 host = '0.0.0.0'
@@ -121,6 +121,23 @@ def delete_url(id):
     else:
         Url.query.filter_by(id=id).delete()
         return "", 204, {'Content-Type': 'application/json'}
+
+@app.route('/users/<userId>/stats', methods=['GET'])
+def stats_user(userId):
+    user = User.query.filter_by(id=userId).first()
+    hits = 0
+    urlCount = 0
+    urls_sorted = sorted(user.urls, key=lambda x: x.hits, reverse=True)
+    hits = sum(url.hits for url in user.urls)
+    urlCount = len(urls_sorted)
+    urls_dictionary = []
+    for i in range(0,10):
+        url = urls_sorted[i]
+        url_dictionary = dict(id=url.id, hits=url.hits, 
+            url=url.url, shortUrl=url.shortUrl)
+        urls_dictionary.append(url_dictionary)        
+    data = json.dumps(dict(hits=hits, urlCount=urlCount, topUrls=urls_dictionary))
+    return data, 200, {'Content-Type': 'application/json'}
 
 def main():
 	app.run(host=host, port=port)

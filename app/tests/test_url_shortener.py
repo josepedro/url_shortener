@@ -1,15 +1,17 @@
-import os
-import unittest
-import tempfile
-import sys
-import app.url_shortener.url_shortener
 from app.url_shortener.url_shortener import User
 from app.url_shortener.url_shortener import UserSchema
 from app.url_shortener.url_shortener import Url
 from app.url_shortener.url_shortener import UrlSchema
 from flask import json
 from flask_sqlalchemy import SQLAlchemy
+import os
+import unittest
+import tempfile
+import sys
+import app.url_shortener.url_shortener
 import re
+import random
+import string
 
 class UrlShortnerTestCase(unittest.TestCase):
 
@@ -177,9 +179,46 @@ class UrlShortnerTestCase(unittest.TestCase):
 
     # GET /users/:userId/stats
     def test_stats_user(self):
-        json_response = json.loads(response.data)
-        # FAZEEEEER
+        db = SQLAlchemy(app.url_shortener.url_shortener.app)
+        num_rows_deleted_user = db.session.query(User).delete()
+        num_rows_deleted_url = db.session.query(Url).delete()
+        user = User(id='userTest2')
+        db.session.add(user)
+        db.session.commit()
+        user_schema = UserSchema()
+        user_schema.dump(user).data
+        
+        total_urls = 12
+        total_hits = 0
+        urls_list = []
+        for i in range(0, total_urls):
+            urlShort = random.choice(string.letters) + random.choice(string.letters)
+            url_string = 'http://www.' + urlShort + '.com.br'
+            hits = random.randint(0, 1000) 
+            total_hits += hits
+            url = Url(url=url_string, shortUrl=urlShort, hits=hits)
+            urls_list.append(dict(url=url_string, shortUrl=urlShort, hits=hits))
+            user.urls.append(url)
+            db.session.add(url)
+            db.session.add(user)
+            db.session.commit()
+            url_schema = UrlSchema()
+            url_schema.dump(url).data
 
+        response = self.app.get('/users/userTest2/stats')
+        json_response = json.loads(response.data)
+        top_urls = json_response['topUrls']
+
+        assert json_response['urlCount'] == total_urls, "Urls quantity wrong"
+        assert json_response['hits'] == total_hits, "Hits quantity wrong" 
+        
+        urls_list.sort(key=lambda x: x['hits'], reverse=True)
+        assert len(top_urls) == 10, "Problem with urls quantity"
+        for i in range(0, len(top_urls)):
+            url_top = top_urls[i]
+            assert top_urls[i]['url'] == urls_list[i]['url'], "Top url problem"
+            assert top_urls[i]['shortUrl'] == urls_list[i]['shortUrl'], "Top url shortUrl problem"
+            assert top_urls[i]['hits'] == urls_list[i]['hits'], "Top url hits problem"
 
 
 
