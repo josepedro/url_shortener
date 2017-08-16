@@ -219,6 +219,7 @@ class UrlShortnerTestCase(unittest.TestCase):
             assert top_urls[i]['url'] == urls_list[i]['url'], "Top url problem"
             assert top_urls[i]['shortUrl'] == urls_list[i]['shortUrl'], "Top url shortUrl problem"
             assert top_urls[i]['hits'] == urls_list[i]['hits'], "Top url hits problem"
+        assert response.status_code == 200, "Problem with status code"
 
 
 
