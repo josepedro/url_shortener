@@ -22,7 +22,8 @@ ma = Marshmallow(app)
 db.drop_all()
 db.create_all()
 
-# Declare Models
+# --------------------------------------------------
+# Models
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.String(255), primary_key=True)
@@ -38,7 +39,7 @@ class Url(db.Model):
 
 # --------------------------------------------------
 
-# Generate Schemas from Models
+# DAO - Generate Schemas from Models
 class UserSchema(ma.ModelSchema):
     class Meta:
         model = User
@@ -63,9 +64,7 @@ def generate_short_url(host, port):
 
 # --------------------------------------------------
 
-@app.route("/")
-def hello_world():
-    return "<strong> hello_world!!!</strong>", 200
+# Controller
 
 @app.route('/users', methods=['POST'])
 def create_user():
