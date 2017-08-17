@@ -1,8 +1,11 @@
+
+
+
 1 - With Ubuntu 14.04 x64 and logged with standard user with sudo group, can be done like that:
-- # useradd -m standard 
-- # passwd standard
-- # adduser standard sudo
-- # su standard
+- ```# useradd -m standard``` 
+- ```# passwd standard```
+- ```# adduser standard sudo```
+- ```# su standard```
 
 2 - Logged with standard user and run these command on terminal:
 - $ cd ~
