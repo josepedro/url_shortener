@@ -21,8 +21,9 @@ This application is a URL Shortener API RESTful service.
 
 This application was build by using microframework for Python Flask.
 Module url_shortener.py have MVC pattern implemented.
-There are two classes: User and Url.
+There are two Model classes: User and Url.
 These classes were implemented by using agregation one to many, i.e., User have many Urls.
+All functions was tested by using Python Unit Testing Framework.
 
 ## Instructions
 
