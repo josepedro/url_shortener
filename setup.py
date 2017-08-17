@@ -5,10 +5,10 @@ import os
 setup(
     name='app',
     version='0.1',
-    description='bla',
-    long_description='foo',
-    keywords='bla',
-    author='gepeto',
+    description='url_shortener',
+    long_description='url_shortener',
+    keywords='url_shortener',
+    author='Jose Pedro',
     packages=find_packages(),
     include_package_data=False,
     entry_points={'console_scripts': [
