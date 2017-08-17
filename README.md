@@ -4,10 +4,11 @@
 - # adduser standard sudo
 - # su standard
 
-2 - Logged with standard user, download zip file with code and run these command on terminal:
+2 - Logged with standard user and run these command on terminal:
 - $ cd ~
+- Download zip file 
 - $ sudo apt-get -y install unzip
-- $ unzip
+- $ unzip url_shortener.zip
 
 3 - With code extracted, run '$ bash install.sh' script or insert these commands on terminal:
 - Update packages repository: 
@@ -32,7 +33,7 @@
 	$ touch /tmp/test.db
 - Preparing database: 
 	$ python prepare_database.py
-- Run tests: 
+- Run tests with Python Unit Testing Framework: 
 	$ python setup.py test
 
 5 - After, run application with '$ bash start.sh' script or insert these command on terminal:
