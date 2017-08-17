@@ -1,5 +1,30 @@
+# URL Shortener
 
+This application is a URL Shortener API RESTful service.
 
+## Directory Structure
+
+```GAP
+├─ app/ 	# All application code in this directory.
+│  ├─ tests/    
+│  │  └─ test_url_shortener.py 	# Several tests by using Python Unit Testing Framework. 
+│  └─ url_shortener/
+│     └─ url_shortener.py 	# Model, View, Controller and Schemas of database.
+├─ app.egg-info/ 	# Configurations file of python library setuptools.
+├─ install.sh 	# Script bash to install dependencies.
+├─ prepare_database.py 	# Script to create database and tables by using SQLite. 
+├─ README.md 	# Informations and instructions.
+├─ setup.py 	# Script to configure and execute python application.
+└─ start.sh 	# Script bash to run application.
+```
+## Architecture
+
+This application was build by using microframework for Python Flask.
+Module url_shortener.py have MVC pattern implemented.
+There are two classes: User and Url.
+These classes were implemented by using agregation one to many, i.e., User have many Urls.
+
+## Instructions
 
 1 - With Ubuntu 14.04 x64 and logged with standard user with sudo group, can be done like that:
 - ```# useradd -m standard``` 
