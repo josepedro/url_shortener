@@ -23,7 +23,7 @@
 - Install virtualenvwrapper to create specific packages context: 
 	$ sudo pip install virtualenvwrapper
 - Add on bashrc: 
-	echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+	$ echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
 
 4 - After, insert these commands on terminal: 
 - Sourcing bashrc: 
